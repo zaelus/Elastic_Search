@@ -43,12 +43,12 @@ public class App
 		 */
 		IndexResponse indexResponse = null;
         try {
-            indexResponse = client.prepareIndex("twitter", "tweet", "1")
+            indexResponse = client.prepareIndex("twitter", "tweet", "2")
                     .setSource(XContentFactory.jsonBuilder()
                             .startObject()
-                            .field("user", "john")
+                            .field("user", "francesco")
                             .field("postDate", new Date())
-                            .field("message", "Who don't it work")
+                            .field("message", "Giochiamo un pò con elastic search")
                             .endObject()
                     )
                     .execute()
@@ -72,7 +72,7 @@ public class App
 		 * MULTI_GET
 		 */
 		MultiGetResponse multiGetItemResponses = client.prepareMultiGet()
-                .add("twitter", "tweet", "1")
+                .add("twitter", "tweet", "1", "2")
                 .add("twitter", "songs", "2")
                 .add("music", "lyrics", "2")
                 .get();
@@ -87,6 +87,11 @@ public class App
             }
         }
 
+
+		/**
+		 * Chiusura client
+		 */
+		client.close();
 
         System.out.println(" >>> EXIT from Main");
         System.exit(0);
