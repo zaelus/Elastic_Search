@@ -2,6 +2,7 @@ package com.dw;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.jackson.map.exc.UnrecognizedPropertyException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.get.MultiGetItemResponse;
 import org.elasticsearch.action.get.MultiGetResponse;
@@ -97,7 +98,9 @@ public class App
 				String json = response.getSourceAsString();
 
                 System.out.println("json = " + json);
-            }
+
+				JsonUtils.fromJson(json, Tweet.class);
+			}
         }
 
 

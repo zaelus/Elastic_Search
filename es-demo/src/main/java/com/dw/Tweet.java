@@ -48,4 +48,15 @@ public class Tweet implements Serializable{
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
+	@Override
+	public String toString() {
+		final StringBuffer sb = new StringBuffer("Tweet{");
+		sb.append("id='").append(id).append('\'');
+		sb.append(", user='").append(user).append('\'');
+		sb.append(", postDate=").append(postDate);
+		sb.append(", message='").append(message).append('\'');
+		sb.append('}');
+		return sb.toString();
+	}
 }
