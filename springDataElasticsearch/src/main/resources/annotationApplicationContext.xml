@@ -8,8 +8,12 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<context:annotation-config/>
+    <bean name="mainBean" class="com.javacodegeeks.spring.elasticsearch.SpringElasticsearchExampleUsingAnnotation"/>
 
-    <elasticsearch:node-client id="client" local="true"/>
+    <elasticsearch:repositories base-package="com.javacodegeeks.spring.elasticsearch"/>
+
+    <!--<elasticsearch:node-client id="client" local="true"/>-->
+    <elasticsearch:transport-client id="client" cluster-nodes="10.180.52.27:9300" cluster-name="fcaporale-elasticsearch-local"/>
 
     <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
         <constructor-arg name="client" ref="client"/>

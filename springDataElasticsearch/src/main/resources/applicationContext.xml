@@ -11,7 +11,8 @@
 	<bean name="mainBean" class="com.javacodegeeks.spring.elasticsearch.SpringElasticsearchExample"/>
  
     <elasticsearch:repositories base-package="com.javacodegeeks.spring.elasticsearch"/>
-    <elasticsearch:node-client id="client" local="true"/>
+    <elasticsearch:node-client id="client" local="false" http-enabled="true" cluster-name="fcaporale-elasticsearch-local"/>
+    <!--<elasticsearch:transport-client id="client" cluster-nodes="127.0.0.1:9300" cluster-name="elasticsearch"/>-->
 
     <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
         <constructor-arg name="client" ref="client"/>
