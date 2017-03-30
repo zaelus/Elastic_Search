@@ -54,4 +54,33 @@ public interface EmployeeRepository extends ElasticsearchRepository<Employee,Str
             "    }" +
             "}")
     List<Employee> findImpiegatiBySkillsIn(List<String> skills);
+
+    @Query("{\"bool\":{\"must\":[{\"nested\":{\"path\":\"skills\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"skills.name\":\"?0\"}}]}}}}]}}")
+    List<Employee> findBySkills_NameIn(List<String> skills);
+
+    List<Employee> findAllBySkills_Name(String skillName);
+
+    @Query("{" +
+            "    \"bool\": {" +
+            "      \"must\": [" +
+            "        {" +
+            "          \"nested\": {" +
+            "            \"path\": \"skills\"," +
+            "            \"query\": {" +
+            "              \"bool\": {" +
+            "                \"should\": [" +
+            "                  {" +
+            "                    \"match\": {" +
+            "                      \"skills\": \"?0\"" +
+            "                    }" +
+            "                  }" +
+            "                ]" +
+            "              }" +
+            "            }" +
+            "          }" +
+            "        }" +
+            "      ]" +
+            "    }" +
+            "}")
+    List<Employee> findBySkills(Skill skill);
 }

@@ -8,14 +8,18 @@ import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.FilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
-import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.SearchQuery;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -56,28 +60,52 @@ public class SpringElasticsearchExampleUsingAnnotation {
 			System.out.println("Load context");
 			SpringElasticsearchExampleUsingAnnotation s = (SpringElasticsearchExampleUsingAnnotation) ctx
 					.getBean("mainBean");
-			System.out.println("Add employees");
-			s.addEmployees();
-			System.out.println("Find all employees");
+//			System.out.println("Add employees :");
+//			s.addEmployees();
+
+			s.saveEmployee("05", "Francesco", 33,
+					new Skill("Java", 10),
+					new Skill("Oracle", 8),
+					new Skill("ML", 8));
+
+			System.out.println("Find all employees :");
 			s.findAllEmployees();
-			System.out.println("Find employee by name 'Joe'");
+			System.out.println("Find employee by name 'Joe' :");
 			s.findEmployee("Joe");
-			System.out.println("Find employee by name 'John'");
+			System.out.println("Find employee by name 'John' :");
 			s.findEmployee("John");
-			System.out.println("Find employees by age");
-			s.findEmployeesByAge(32);
+			System.out.println("Find employees by age :");
+			s.findEmployeesByAge(42);
+
+			System.out.println("Find employees by skills name list :");
+			List<String> skillsToFind = new ArrayList<>();
+			skillsToFind.add("Java");
+//			skillsToFind.add("Kotlin");
+			skillsToFind.add("ML");
+
+			s.findAllEmployeesBySkillsName(skillsToFind);
 		} finally {
 			ctx.close();
 		}
 	}
 
 	public void addEmployees() {
-		Employee joe = new Employee("01", "Joe", 32);
+
 		Skill javaSkill = new Skill("Java", 10);
 		Skill db = new Skill("Oracle", 5);
+		Skill kotlin = new Skill("Kotlin", 6);
+		Skill spark = new Skill("Spark", 4);
+		Skill scala = new Skill("Scala", 7);
+
+		Employee joe = new Employee("01", "Joe", 32);
 		joe.setSkills(Arrays.asList(javaSkill, db));
+
 		Employee johnS = new Employee("02", "John S", 32);
+		johnS.setSkills(Arrays.asList(scala, kotlin));
+
 		Employee johnP = new Employee("03", "John P", 42);
+		johnP.setSkills(Arrays.asList(javaSkill,spark,db));
+
 		Employee sam = new Employee("04", "Sam", 30);
 
 		template.createIndex(Employee.class);
@@ -90,6 +118,18 @@ public class SpringElasticsearchExampleUsingAnnotation {
 		repository.save(johnS);
 		repository.save(johnP);
 		repository.save(sam);
+	}
+
+	public void saveEmployee(String id, String name, int age, Skill... skills){
+
+		Employee newEmployee = new Employee(id, name, age);
+		newEmployee.setSkills(Arrays.asList(skills));
+
+		this.saveEmployee(newEmployee);
+	}
+
+	private void saveEmployee(Employee employee){
+		repository.save(employee);
 	}
 
 	public void findAllEmployees() {
@@ -105,7 +145,15 @@ public class SpringElasticsearchExampleUsingAnnotation {
 		List<Employee> empList = repository.findEmployeesByAge(age);
 		System.out.println("Employee list: " + empList);
 	}
-	
+
+	private void findAllEmployeesBySkillsName(List<String> skillsToFind) {
+
+		List<Employee> empList = repository.findBySkills_NameIn(skillsToFind);
+		System.out.println("Employee list(#"+empList.size()+") by skills "+skillsToFind+" : \n" + empList);
+//		repository.findBySkills(new Skill("Kotlin", 6)).forEach(System.out::println);
+
+	}
+
 	private static NodeClient getNodeClient() {
 		return (NodeClient) nodeBuilder().clusterName(UUID.randomUUID().toString()).local(true).node()
 				.client();
@@ -113,10 +161,6 @@ public class SpringElasticsearchExampleUsingAnnotation {
 
 	@Bean
 	public Client getClient(){
-		Settings settings = ImmutableSettings.settingsBuilder()
-				.put("cluster.node", "127.0.0.1:9300")
-				.put("cluster.name", "localhost-elasticsearch-local")
-				.put("client.transport.sniff", true).build();
 
 		TransportClient client = new TransportClient();
 

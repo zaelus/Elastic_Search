@@ -19,6 +19,9 @@ public class SpringElasticsearchExample {
 	@Autowired
 	private ElasticsearchTemplate template;
 
+//	@Autowired
+//	private NodeClient nodeClient;
+
 	public static void main(String[] args) throws URISyntaxException, Exception {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
 				"applicationContext.xml");
@@ -26,53 +29,22 @@ public class SpringElasticsearchExample {
 			System.out.println("Load context");
 			SpringElasticsearchExample s = (SpringElasticsearchExample) ctx
 					.getBean("mainBean");
-			System.out.println("Add employees");
-			s.addEmployees();
-			System.out.println("Find all employees");
-			s.findAllEmployees();
-			System.out.println("Find employee by name 'Joe'");
-			s.findEmployee("Joe");
-			System.out.println("Find employee by name 'John'");
-			s.findEmployee("John");
-			System.out.println("Find employees by age");
-			s.findEmployeesByAge(32);
 
-			System.out.println("Find employees by skills name list");
-			s.findAllEmployeesBySkillsName();
+			System.out.println("template = " + s.template);
+//			s.addEmployees();
+//			s.findAllEmployees();
+//			s.findEmployee("Joe");
+//			s.findEmployee("John");
+//			s.findEmployeesByAge(32);
+
 		} finally {
 			ctx.close();
 		}
 	}
 
-	private void findAllEmployeesBySkillsName() {
-		List<String> skillsToFind = new ArrayList<>();
-
-		skillsToFind.add("Java");
-		skillsToFind.add("Kotlin");
-
-		List<Employee> empList = repository.findImpiegatiBySkillsIn(skillsToFind);
-		System.out.println("Employee list by skills: " + empList);
-	}
-
-//	private void test(){
-//		elasticsearchTemplate.deleteIndex(Article.class);
-//		elasticsearchTemplate.createIndex(Article.class);
-//		elasticsearchTemplate.putMapping(Article.class);
-//		elasticsearchTemplate.refresh(Article.class, true);
-//
-//		IndexQuery article1 = new ArticleBuilder("1").title("article four").addAuthor(RIZWAN_IDREES).addAuthor(ARTUR_KONCZAK).addAuthor(MOHSIN_HUSEN).addAuthor(JONATHAN_YAN).score(10).buildIndex();
-//		IndexQuery article2 = new ArticleBuilder("2").title("article three").addAuthor(RIZWAN_IDREES).addAuthor(ARTUR_KONCZAK).addAuthor(MOHSIN_HUSEN).addPublishedYear(YEAR_2000).score(20).buildIndex();
-//		IndexQuery article3 = new ArticleBuilder("3").title("article two").addAuthor(RIZWAN_IDREES).addAuthor(ARTUR_KONCZAK).addPublishedYear(YEAR_2001).addPublishedYear(YEAR_2000).score(30).buildIndex();
-//		IndexQuery article4 = new ArticleBuilder("4").title("article one").addAuthor(RIZWAN_IDREES).addPublishedYear(YEAR_2002).addPublishedYear(YEAR_2001).addPublishedYear(YEAR_2000).score(40).buildIndex();
-//
-//		elasticsearchTemplate.index(article1);
-//		elasticsearchTemplate.index(article2);
-//		elasticsearchTemplate.index(article3);
-//		elasticsearchTemplate.index(article4);
-//		elasticsearchTemplate.refresh(Article.class, true);
-//	}
-
 	public void addEmployees() {
+		System.out.println("Add employees");
+
 		Skill javaSkill = new Skill("Java", 10);
 		Skill db = new Skill("Oracle", 5);
 		Skill kotlin = new Skill("Kotlin", 3);
@@ -105,15 +77,18 @@ public class SpringElasticsearchExample {
 	}
 
 	public void findAllEmployees() {
+		System.out.println("Find all employees");
 		repository.findAll().forEach(System.out::println);
 	}
 
 	public void findEmployee(String name) {
+		System.out.println("Find employee by name '"+name+"'");
 		List<Employee> empList = repository.findEmployeesByName(name);
 		System.out.println("Employee list: " + empList);
 	}
 
 	public void findEmployeesByAge(int age) {
+		System.out.println("Find employees by age : "+ age);
 		List<Employee> empList = repository.findEmployeesByAge(age);
 		System.out.println("Employee list: " + empList);
 	}
