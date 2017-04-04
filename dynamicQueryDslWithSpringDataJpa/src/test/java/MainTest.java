@@ -12,6 +12,13 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 /**
  * Created by F.C. on 04/04/2017.
@@ -29,33 +36,54 @@ public class MainTest {
 	public void testCreateCustomer(){
 		Customer customer = createMockCustomer("Francesco", "Caporale");
 		Customer savedOne = customerRepository.save(customer);
-
-		System.out.println("savedOne = " + savedOne);
+		assertNotNull(savedOne);
 	}
 
 	@Test
 	public void testCreateSome_Customers(){
 
-		customerRepository.save(new Customer("Giovanni", "Pallini"));
-		customerRepository.save(new Customer("Luca", "Giovannelli"));
-		customerRepository.save(new Customer("Giovanni Maria", "Teutezi"));
-		customerRepository.save(new Customer("Maria", "Callo"));
+		List<Customer> mockCustomers = createMockCustomers();
 
+		List<Customer> savedList = customerRepository.save(mockCustomers);
+
+		assertEquals(mockCustomers.size(), savedList.size());
+	}
+
+	private List<Customer> createMockCustomers() {
+
+		List<Customer> customers = new ArrayList<>();
+
+		customers.add(new Customer("Angelina", "Jolie"));
+		customers.add(new Customer("Brad", "Pitt"));
+		customers.add(new Customer("Michael", "Jackson"));
+		customers.add(new Customer("Michael", "Douglas"));
+
+		return customers;
 	}
 
 	@Test
 	public void testSearchWithCriteria(){
 
+		List<Customer> mockCustomers = createMockCustomers();
+		List<Customer> savedList = customerRepository.save(mockCustomers);
+		assertEquals(mockCustomers.size(), savedList.size());
+
 		CriteriaBean criteria = new CriteriaBean();
-		criteria.setFirstName("vanni");
-		criteria.setLastName("utez");
+		criteria.setFirstName("chael");
+		criteria.setLastName("OUGLA");
 
 		Pageable pageable = new PageRequest(0, 1000, Sort.Direction.ASC, "id");
 		Page<Customer> customers = customerRepository.searchAllCustomerWithSearchBean(criteria, pageable);
 
-		System.out.println("Filtered by \"criteria\" Result : ");
-		for (Customer customer : customers) {
-			System.out.println("customer = " + customer);
+		System.out.println(">> Filtering with criteria = " + criteria);
+
+		if(customers != null && !CollectionUtils.isEmpty(customers.getContent())) {
+			System.out.println("<< Filtered by \"criteria\", Result size : ["+customers.getTotalElements()+"]: ");
+			for (Customer customer : customers) {
+				System.out.println("\tcustomer = " + customer);
+			}
+		} else {
+			System.out.println("<< NO RESULTS");
 		}
 
 	}
