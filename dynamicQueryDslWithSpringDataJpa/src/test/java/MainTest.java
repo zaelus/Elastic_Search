@@ -3,6 +3,8 @@ import it.fcap.example.app.data.repo.CustomerRepository;
 import it.fcap.example.app.data.search.CriteriaBean;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +30,8 @@ import static junit.framework.TestCase.assertNotNull;
 @Transactional
 @Rollback(true)
 public class MainTest {
+
+	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private CustomerRepository customerRepository;
@@ -57,6 +61,7 @@ public class MainTest {
 		customers.add(new Customer("Brad", "Pitt"));
 		customers.add(new Customer("Michael", "Jackson"));
 		customers.add(new Customer("Michael", "Douglas"));
+		customers.add(new Customer("Kirk", "Douglas"));
 
 		return customers;
 	}
@@ -64,26 +69,24 @@ public class MainTest {
 	@Test
 	public void testSearchWithCriteria(){
 
-		List<Customer> mockCustomers = createMockCustomers();
-		List<Customer> savedList = customerRepository.save(mockCustomers);
-		assertEquals(mockCustomers.size(), savedList.size());
+		customerRepository.save(createMockCustomers());
 
 		CriteriaBean criteria = new CriteriaBean();
-		criteria.setFirstName("chael");
-		criteria.setLastName("OUGLA");
+		criteria.setFirstName("cHAEl");
+//		criteria.setLastName("ouGlas");
 
 		Pageable pageable = new PageRequest(0, 1000, Sort.Direction.ASC, "id");
 		Page<Customer> customers = customerRepository.searchAllCustomerWithSearchBean(criteria, pageable);
 
-		System.out.println(">> Filtering with criteria = " + criteria);
+		logger.info(">> Filtering with criteria = " + criteria + " ...");
 
 		if(customers != null && !CollectionUtils.isEmpty(customers.getContent())) {
-			System.out.println("<< Filtered by \"criteria\", Result size : ["+customers.getTotalElements()+"]: ");
+			logger.info("<< Filtered by \"criteria\", Result size : ["+customers.getTotalElements()+"]: ");
 			for (Customer customer : customers) {
-				System.out.println("\tcustomer = " + customer);
+				logger.info("\tcustomer = " + customer);
 			}
 		} else {
-			System.out.println("<< NO RESULTS");
+			logger.info("<< NO RESULTS");
 		}
 
 	}

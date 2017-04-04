@@ -21,7 +21,7 @@ public enum CustomerCriteriaStrategyEnum {
 				return;
 			}
 
-			query = query.where(rootQentity.firstName
+			query.where(rootQentity.firstName
 					.likeIgnoreCase("%" + criteria.getFirstName()
 							.toLowerCase() + "%"));
 		}
@@ -37,7 +37,7 @@ public enum CustomerCriteriaStrategyEnum {
 				return;
 			}
 
-			query = query.where(rootQentity.lastName
+			query.where(rootQentity.lastName
 					.likeIgnoreCase("%" + criteria.getLastName()
 							.toLowerCase() + "%"));
 		}
