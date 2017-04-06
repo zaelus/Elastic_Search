@@ -3,13 +3,19 @@ package com.javacodegeeks.spring.elasticsearch;
 import com.javacodegeeks.spring.elasticsearch.data.model.Employee;
 import com.javacodegeeks.spring.elasticsearch.data.model.Skill;
 import com.javacodegeeks.spring.elasticsearch.data.repo.EmployeeRepository;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthStatus;
+import org.elasticsearch.action.admin.cluster.health.ClusterIndexHealth;
+import org.elasticsearch.action.admin.cluster.node.info.NodesInfoResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.collect.ImmutableList;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.unit.TimeValue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
@@ -35,11 +41,13 @@ public class SpringElasticsearchTransportClient {
 
 	@Autowired
 	private ElasticsearchTemplate template;
-	
+
+	@Autowired
+	private Client client;
 	
 	@Bean
 	public ElasticsearchTemplate elasticsearchTemplate() {
-		return new ElasticsearchTemplate(getTransportClient());
+		return new ElasticsearchTemplate(client);
 	}
 
 	public static void main(String[] args) throws URISyntaxException, Exception {
@@ -179,8 +187,35 @@ public class SpringElasticsearchTransportClient {
 			System.out.println("discoveryNode.getHostName() = " + discoveryNode.getHostName());
 		}
 
-
 		return client;
+	}
+
+	public void getClusterHealth(){
+
+		ClusterHealthResponse healths = client.admin().cluster().prepareHealth().get();
+		System.out.println("healths = " + healths + "\n");
+
+		String clusterName = healths.getClusterName();
+		int numberOfDataNodes = healths.getNumberOfDataNodes();
+		int numberOfNodes = healths.getNumberOfNodes();
+
+		for (ClusterIndexHealth health : healths.getIndices().values()) {
+			String index = health.getIndex();
+			int numberOfShards = health.getNumberOfShards();
+			int numberOfReplicas = health.getNumberOfReplicas();
+			ClusterHealthStatus status = health.getStatus();
+		}
+
+		// WAIT FOR GREEEEEEEEN
+		client.admin().cluster().prepareHealth()
+				.setWaitForGreenStatus()
+				.setTimeout(TimeValue.timeValueSeconds(2))
+				.get();
+	}
+
+	public void getNodesInfo(){
+		NodesInfoResponse nodeInfos = client.admin().cluster().prepareNodesInfo().get();
+		System.out.println("nodeInfos = " + nodeInfos + "\n");
 	}
 
 //	public Client getAnotherTransportClient(){
