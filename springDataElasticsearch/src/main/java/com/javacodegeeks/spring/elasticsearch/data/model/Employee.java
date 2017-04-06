@@ -1,4 +1,4 @@
-package com.javacodegeeks.spring.elasticsearch;
+package com.javacodegeeks.spring.elasticsearch.data.model;
 
 import java.util.List;
 

@@ -1,10 +1,12 @@
 package com.javacodegeeks.spring.elasticsearch;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.javacodegeeks.spring.elasticsearch.data.model.Employee;
+import com.javacodegeeks.spring.elasticsearch.data.model.Skill;
+import com.javacodegeeks.spring.elasticsearch.data.repo.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -12,22 +14,19 @@ import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
 
 @Configuration
-public class SpringElasticsearchExample {
+public class SpringElasticsearchNodeClient {
 	@Autowired
 	private EmployeeRepository repository;
 
 	@Autowired
 	private ElasticsearchTemplate template;
 
-//	@Autowired
-//	private NodeClient nodeClient;
-
 	public static void main(String[] args) throws URISyntaxException, Exception {
 		ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
-				"applicationContext.xml");
+				"node-client-spring-context.xml");
 		try {
 			System.out.println("Load context");
-			SpringElasticsearchExample s = (SpringElasticsearchExample) ctx
+			SpringElasticsearchNodeClient s = (SpringElasticsearchNodeClient) ctx
 					.getBean("mainBean");
 
 			System.out.println("template = " + s.template);
@@ -91,5 +90,9 @@ public class SpringElasticsearchExample {
 		System.out.println("Find employees by age : "+ age);
 		List<Employee> empList = repository.findEmployeesByAge(age);
 		System.out.println("Employee list: " + empList);
+	}
+
+	public void shutdownNodeClient(){
+		System.exit(0);
 	}
 }

@@ -1,4 +1,4 @@
-package com.javacodegeeks.spring.elasticsearch;
+package com.javacodegeeks.spring.elasticsearch.data.model;
 
 public class Skill {
 	private String name;

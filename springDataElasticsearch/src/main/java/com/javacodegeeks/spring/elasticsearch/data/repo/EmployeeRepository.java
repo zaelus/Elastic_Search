@@ -1,7 +1,9 @@
-package com.javacodegeeks.spring.elasticsearch;
+package com.javacodegeeks.spring.elasticsearch.data.repo;
 
 import java.util.List;
 
+import com.javacodegeeks.spring.elasticsearch.data.model.Employee;
+import com.javacodegeeks.spring.elasticsearch.data.model.Skill;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 

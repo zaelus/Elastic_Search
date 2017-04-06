@@ -1,7 +1,9 @@
 package com.javacodegeeks.spring.elasticsearch;
 
+import com.javacodegeeks.spring.elasticsearch.data.model.Employee;
+import com.javacodegeeks.spring.elasticsearch.data.model.Skill;
+import com.javacodegeeks.spring.elasticsearch.data.repo.EmployeeRepository;
 import org.elasticsearch.client.Client;
-import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.collect.ImmutableList;
@@ -16,16 +18,13 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 @Configuration("mainBean")
 // TODO : vedere JavaConfig rispetto a xml
 //@ComponentScan(basePackages = { "com.javacodegeeks.*" })
 //@EnableElasticsearchRepositories(basePackages = "com.javacodegeeks.spring.elasticsearch")
 //@PropertySource(value = "classpath:config.properties")
-public class SpringElasticsearchExampleUsingAnnotation {
+public class SpringElasticsearchTransportClient {
 	private final String CLUSTER_NAME = "elasticsearch";
 
 //	@Value("${esearch.port}") int port;
@@ -40,22 +39,20 @@ public class SpringElasticsearchExampleUsingAnnotation {
 	
 	@Bean
 	public ElasticsearchTemplate elasticsearchTemplate() {
-//		return new ElasticsearchTemplate(getNodeClient());
 		return new ElasticsearchTemplate(getTransportClient());
-//		return new ElasticsearchTemplate(getTransportClient());
 	}
 
 	public static void main(String[] args) throws URISyntaxException, Exception {
 		// TODO : vedere JavaConfig rispetto a xml
 //		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ClassPathXmlApplicationContext ctx =new ClassPathXmlApplicationContext(
-				"annotationApplicationContext.xml");
+				"transport-client-spring-context.xml");
 		try {
 			// TODO : vedere JavaConfig rispetto a xml
 //			ctx.register(SpringElasticsearchExampleUsingAnnotation.class);
 //			ctx.refresh();
 			System.out.println("Load context");
-			SpringElasticsearchExampleUsingAnnotation s = (SpringElasticsearchExampleUsingAnnotation) ctx
+			SpringElasticsearchTransportClient s = (SpringElasticsearchTransportClient) ctx
 					.getBean("mainBean");
 
 			/**

@@ -9,7 +9,7 @@
 
 	<context:annotation-config/>
     <context:component-scan base-package="com.javacodegeeks.spring.elasticsearch"/>
-	<bean name="mainBean" class="com.javacodegeeks.spring.elasticsearch.SpringElasticsearchExample"/>
+	<bean name="mainBean" class="com.javacodegeeks.spring.elasticsearch.SpringElasticsearchNodeClient" scope="prototype"/>
  
     <elasticsearch:repositories base-package="com.javacodegeeks.spring.elasticsearch"/>
     <elasticsearch:node-client id="client" local="false" http-enabled="true" cluster-name="fcaporale-elasticsearch-local"/>
