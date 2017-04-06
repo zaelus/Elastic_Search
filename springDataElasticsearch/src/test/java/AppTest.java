@@ -32,6 +32,7 @@ public class AppTest
 {
 
     private static final int CLIENT_NODES = 4;
+
     @Autowired
     private SpringElasticsearchTransportClient mainBean;
 
@@ -40,14 +41,17 @@ public class AppTest
     @BeforeClass
     public static void initTestCase(){
 
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
-                "node-client-spring-context.xml");
+
 
         for(int i=0; i<CLIENT_NODES; i++){
             System.out.println("Load context [" + (i+1)+"]");
-            SpringElasticsearchNodeClient nodeClient = (SpringElasticsearchNodeClient) ctx
-                    .getBean("mainBean");
-            nodeClientList.add(nodeClient);
+            ((Runnable) () -> {
+                ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(
+                        "node-client-spring-context-test.xml");
+                SpringElasticsearchNodeClient nodeClient = (SpringElasticsearchNodeClient) ctx
+                        .getBean("mainBean");
+                nodeClientList.add(nodeClient);
+            }).run();
         }
 
         System.out.println("Nodes loaded !");
@@ -65,6 +69,7 @@ public class AppTest
     @Test
     public void testTransportClient_(){
 
+        System.out.println("Test");
         mainBean.addEmployees();
         mainBean.findAllEmployees();
     }
