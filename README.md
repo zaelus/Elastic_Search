@@ -1,2 +1,2 @@
-# dynamic-querydsl-springdatajpa
-A study about dynamic query building with queryDsl + spring-data-jpa and StrategyPattern with EnumFunction
+# elasticsearch-springdata-jpa
+A study about elasticsearch spring-data-elasticsearch and jparepositories
