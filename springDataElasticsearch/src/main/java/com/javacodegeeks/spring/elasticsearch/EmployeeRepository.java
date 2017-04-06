@@ -9,27 +9,8 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 public interface EmployeeRepository extends ElasticsearchRepository<Employee,String> {
     List<Employee> findEmployeesByAge(int age);  
     List<Employee> findEmployeesByName(String name);
-//    @Query("{" +
-//            "    \"bool\": {" +
-//            "      \"must\": [" +
-//            "        {" +
-//            "          \"nested\": {" +
-//            "            \"path\": \"skills\", " +
-//            "            \"query\": {" +
-//            "              \"bool\": {" +
-//            "                \"must\": [ " +
-//            "                  {" +
-//            "                    \"match\": {" +
-//            "                      \"skills.name\": \"?\"" +
-//            "                    }" +
-//            "                  }" +
-//            "                ]" +
-//            "              }" +
-//            "            }" +
-//            "          }" +
-//            "        }" +
-//            "      ]" +
-//            "}}")
+
+    @Deprecated
     @Query("{" +
             "    \"bool\": {" +
             "      \"must\": [" +
@@ -58,8 +39,10 @@ public interface EmployeeRepository extends ElasticsearchRepository<Employee,Str
     @Query("{\"bool\":{\"must\":[{\"nested\":{\"path\":\"skills\",\"query\":{\"bool\":{\"must\":[{\"match\":{\"skills.name\":\"?0\"}}]}}}}]}}")
     List<Employee> findBySkills_NameIn(List<String> skills);
 
+    @Deprecated
     List<Employee> findAllBySkills_Name(String skillName);
 
+    @Deprecated
     @Query("{" +
             "    \"bool\": {" +
             "      \"must\": [" +

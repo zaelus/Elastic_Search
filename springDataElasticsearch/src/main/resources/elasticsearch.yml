@@ -1,1 +1,1 @@
-transport.client.initial_nodes: ["10.180.52.27:9300"]
+transport.client.initial_nodes: ["0.0.0.0:9300"]

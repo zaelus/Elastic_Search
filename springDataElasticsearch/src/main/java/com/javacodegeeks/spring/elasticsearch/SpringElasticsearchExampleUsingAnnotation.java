@@ -5,18 +5,12 @@ import org.elasticsearch.client.node.NodeClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.node.DiscoveryNode;
 import org.elasticsearch.common.collect.ImmutableList;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
-import org.elasticsearch.index.query.FilterBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.SearchQuery;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -27,6 +21,7 @@ import java.util.UUID;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 @Configuration("mainBean")
+// TODO : vedere JavaConfig rispetto a xml
 //@ComponentScan(basePackages = { "com.javacodegeeks.*" })
 //@EnableElasticsearchRepositories(basePackages = "com.javacodegeeks.spring.elasticsearch")
 //@PropertySource(value = "classpath:config.properties")
@@ -46,28 +41,38 @@ public class SpringElasticsearchExampleUsingAnnotation {
 	@Bean
 	public ElasticsearchTemplate elasticsearchTemplate() {
 //		return new ElasticsearchTemplate(getNodeClient());
-		return new ElasticsearchTemplate(getClient());
+		return new ElasticsearchTemplate(getTransportClient());
 //		return new ElasticsearchTemplate(getTransportClient());
 	}
 
 	public static void main(String[] args) throws URISyntaxException, Exception {
+		// TODO : vedere JavaConfig rispetto a xml
 //		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
 		ClassPathXmlApplicationContext ctx =new ClassPathXmlApplicationContext(
 				"annotationApplicationContext.xml");
 		try {
+			// TODO : vedere JavaConfig rispetto a xml
 //			ctx.register(SpringElasticsearchExampleUsingAnnotation.class);
 //			ctx.refresh();
 			System.out.println("Load context");
 			SpringElasticsearchExampleUsingAnnotation s = (SpringElasticsearchExampleUsingAnnotation) ctx
 					.getBean("mainBean");
+
+			/**
+			 * inserts
+			 */
 //			System.out.println("Add employees :");
 //			s.addEmployees();
 
+			System.out.println("Save Employee :");
 			s.saveEmployee("05", "Francesco", 33,
 					new Skill("Java", 10),
 					new Skill("Oracle", 8),
 					new Skill("ML", 8));
 
+			/**
+			 * find & search
+			 */
 			System.out.println("Find all employees :");
 			s.findAllEmployees();
 			System.out.println("Find employee by name 'Joe' :");
@@ -129,7 +134,8 @@ public class SpringElasticsearchExampleUsingAnnotation {
 	}
 
 	private void saveEmployee(Employee employee){
-		repository.save(employee);
+		Employee saved = repository.save(employee);
+		System.out.println("Employee saved = " + saved);
 	}
 
 	public void findAllEmployees() {
@@ -150,17 +156,11 @@ public class SpringElasticsearchExampleUsingAnnotation {
 
 		List<Employee> empList = repository.findBySkills_NameIn(skillsToFind);
 		System.out.println("Employee list(#"+empList.size()+") by skills "+skillsToFind+" : \n" + empList);
-//		repository.findBySkills(new Skill("Kotlin", 6)).forEach(System.out::println);
 
-	}
-
-	private static NodeClient getNodeClient() {
-		return (NodeClient) nodeBuilder().clusterName(UUID.randomUUID().toString()).local(true).node()
-				.client();
 	}
 
 	@Bean
-	public Client getClient(){
+	public Client getTransportClient(){
 
 		TransportClient client = new TransportClient();
 
@@ -176,8 +176,6 @@ public class SpringElasticsearchExampleUsingAnnotation {
 
 			client.addTransportAddress(new InetSocketTransportAddress(host, port));
 		}
-//		TransportAddress address = new InetSocketTransportAddress("127.0.0.1", 9003);
-//		client.addTransportAddress(address);
 
 		ImmutableList<DiscoveryNode> discoveryNodes = client.connectedNodes();
 		for (DiscoveryNode discoveryNode : discoveryNodes) {
@@ -188,19 +186,19 @@ public class SpringElasticsearchExampleUsingAnnotation {
 		return client;
 	}
 
-	public Client getTransportClient(){
-		System.out.println("Starting Elasticsearch Client");
-		Settings settings = ImmutableSettings.settingsBuilder()
-				.put("cluster.name", CLUSTER_NAME).build();
-
-		TransportClient esClient = new TransportClient(settings);
-		for (String host : new String[]{"localhost"}) {
-			esClient.addTransportAddress(
-					new InetSocketTransportAddress(host, 9300));
-			System.out.println(String.format("Added Elasticsearch Node : %s", host));
-		}
-		System.out.println("Started Elasticsearch Client");
-
-		return esClient;
-	}
+//	public Client getAnotherTransportClient(){
+//		System.out.println("Starting Elasticsearch Client");
+//		Settings settings = ImmutableSettings.settingsBuilder()
+//				.put("cluster.name", CLUSTER_NAME).build();
+//
+//		TransportClient esClient = new TransportClient(settings);
+//		for (String host : new String[]{"localhost"}) {
+//			esClient.addTransportAddress(
+//					new InetSocketTransportAddress(host, 9300));
+//			System.out.println(String.format("Added Elasticsearch Node : %s", host));
+//		}
+//		System.out.println("Started Elasticsearch Client");
+//
+//		return esClient;
+//	}
 }
